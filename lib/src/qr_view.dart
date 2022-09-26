@@ -57,9 +57,13 @@ class _QrViewState extends State<QrView> with SingleTickerProviderStateMixin {
     _scanLineController = AnimationController(
       duration: const Duration(milliseconds: 3000),
       vsync: this,
-    )
-      ..addListener(() => _scanLinePositionNotifier.value = _scanLinePosition.value)
-      ..repeat();
+    );
+
+    if (widget.overlayOptions.scanLineEnabled) {
+      _scanLineController
+        ..addListener(() => _scanLinePositionNotifier.value = _scanLinePosition.value)
+        ..repeat();
+    }
 
     _scanLinePosition = Tween<Offset>(
       begin: Offset.zero,
@@ -107,35 +111,59 @@ class _QrViewState extends State<QrView> with SingleTickerProviderStateMixin {
         child: Stack(
           children: [
             _getPlatformQrView(),
-            ValueListenableBuilder<Offset>(
-              valueListenable: _scanLinePositionNotifier,
-              builder: (_, scanLinePosition, __) {
-                return Container(
-                  decoration: ShapeDecoration(
-                    shape: QrViewOverlayShape(
-                      border: widget.overlayOptions.border,
-                      borderCap: widget.overlayOptions.borderCap,
-                      borderRadius: widget.overlayOptions.borderRadius,
-                      borderLength: widget.overlayOptions.borderLength,
-                      borderEnabled: widget.overlayOptions.borderEnabled,
-                      scanLineWidth: widget.overlayOptions.scanLineWidth,
-                      scanLineEndWidth: widget.overlayOptions.scanLineEndWidth,
-                      scanLineCap: widget.overlayOptions.scanLineCap,
-                      scanLineAlignment: widget.overlayOptions.scanLineAlignment,
-                      scanLineColors: widget.overlayOptions.scanLineColors,
-                      scanLineColorStops: widget.overlayOptions.scanLineColorStops,
-                      scanLinePosition: scanLinePosition,
-                      scanLineEnabled: widget.overlayOptions.scanLineEnabled,
-                      overlayColor: widget.overlayOptions.overlayColor,
-                      scanAreaSize: widget.overlayOptions.scanAreaSize,
-                      scanAreaHeight: widget.overlayOptions.scanAreaHeight,
-                      scanAreaWidth: widget.overlayOptions.scanAreaWidth,
-                      scanAreaOffset: widget.overlayOptions.scanAreaOffset,
+            widget.overlayOptions.scanLineEnabled
+                ? ValueListenableBuilder<Offset>(
+                    valueListenable: _scanLinePositionNotifier,
+                    builder: (_, scanLinePosition, __) {
+                      return Container(
+                        decoration: ShapeDecoration(
+                          shape: QrViewOverlayShape(
+                            border: widget.overlayOptions.border,
+                            borderCap: widget.overlayOptions.borderCap,
+                            borderRadius: widget.overlayOptions.borderRadius,
+                            borderLength: widget.overlayOptions.borderLength,
+                            borderEnabled: widget.overlayOptions.borderEnabled,
+                            scanLineWidth: widget.overlayOptions.scanLineWidth,
+                            scanLineEndWidth: widget.overlayOptions.scanLineEndWidth,
+                            scanLineCap: widget.overlayOptions.scanLineCap,
+                            scanLineAlignment: widget.overlayOptions.scanLineAlignment,
+                            scanLineColors: widget.overlayOptions.scanLineColors,
+                            scanLineColorStops: widget.overlayOptions.scanLineColorStops,
+                            scanLineEnabled: widget.overlayOptions.scanLineEnabled,
+                            overlayColor: widget.overlayOptions.overlayColor,
+                            scanAreaSize: widget.overlayOptions.scanAreaSize,
+                            scanAreaHeight: widget.overlayOptions.scanAreaHeight,
+                            scanAreaWidth: widget.overlayOptions.scanAreaWidth,
+                            scanAreaOffset: widget.overlayOptions.scanAreaOffset,
+                            scanLinePosition: scanLinePosition,
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    decoration: ShapeDecoration(
+                      shape: QrViewOverlayShape(
+                        border: widget.overlayOptions.border,
+                        borderCap: widget.overlayOptions.borderCap,
+                        borderRadius: widget.overlayOptions.borderRadius,
+                        borderLength: widget.overlayOptions.borderLength,
+                        borderEnabled: widget.overlayOptions.borderEnabled,
+                        scanLineWidth: widget.overlayOptions.scanLineWidth,
+                        scanLineEndWidth: widget.overlayOptions.scanLineEndWidth,
+                        scanLineCap: widget.overlayOptions.scanLineCap,
+                        scanLineAlignment: widget.overlayOptions.scanLineAlignment,
+                        scanLineColors: widget.overlayOptions.scanLineColors,
+                        scanLineColorStops: widget.overlayOptions.scanLineColorStops,
+                        scanLineEnabled: widget.overlayOptions.scanLineEnabled,
+                        overlayColor: widget.overlayOptions.overlayColor,
+                        scanAreaSize: widget.overlayOptions.scanAreaSize,
+                        scanAreaHeight: widget.overlayOptions.scanAreaHeight,
+                        scanAreaWidth: widget.overlayOptions.scanAreaWidth,
+                        scanAreaOffset: widget.overlayOptions.scanAreaOffset,
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
           ],
         ),
       ),
