@@ -14,7 +14,7 @@ class OverlayOptions {
     this.border = const BorderSide(
       width: 8.0,
       strokeAlign: StrokeAlign.center,
-      color: Color(0xFFFFFFFF),
+      color: Colors.white,
     ),
     this.borderCap = BorderCap.round,
     this.borderRadius = 16.0,
@@ -196,36 +196,13 @@ class QrViewOverlayShape extends OverlayShape {
     final scanAreaHeight = this.scanAreaHeight < height ? this.scanAreaHeight : height;
 
     final roiRect = Rect.fromLTWH(
-      rect.left + (width / 2.0) - (scanAreaWidth / 2.0) + _borderOffset,
-      rect.top + (height / 2.0) - (scanAreaHeight / 2.0) + _borderOffset - scanAreaOffset,
-      scanAreaWidth - _borderOffset,
-      scanAreaHeight - _borderOffset,
+      rect.left + (width / 2.0) - (scanAreaWidth / 2.0),
+      rect.top + (height / 2.0) - (scanAreaHeight / 2.0) - scanAreaOffset,
+      scanAreaWidth,
+      scanAreaHeight,
     );
 
-    if (borderEnabled) {
-      double borderLength = this.borderLength;
-      final maxBorderLength = min(roiRect.width / 2.0, roiRect.height / 2.0);
-      borderLength = (borderLength < maxBorderLength) ? borderLength : maxBorderLength;
-      borderLength -= borderCap == BorderCap.round ? (border.width / 2.0) : 0.0;
-
-      // limit border radius
-      double borderRadius = this.borderRadius;
-      borderRadius = (borderRadius < borderLength) ? borderRadius : borderLength;
-
-      // calculate border properties with alignment
-      double responsiveBorderRadius = 0.0;
-      double responsiveBorderOffset = 0.0;
-      if (border.strokeAlign == StrokeAlign.outside) {
-        responsiveBorderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
-        responsiveBorderRadius = borderRadius - _borderOffset;
-      } else if (border.strokeAlign == StrokeAlign.center) {
-        responsiveBorderOffset = borderRadius + _borderOffset;
-        responsiveBorderRadius = borderRadius;
-      } else if (border.strokeAlign == StrokeAlign.inside) {
-        responsiveBorderOffset = borderRadius + _borderOffset - (border.width / 2.0);
-        responsiveBorderRadius = borderRadius - _borderOffset;
-      }
-
+    if (!borderEnabled) {
       canvas.drawPath(
         Path.combine(
           PathOperation.difference,
@@ -234,9 +211,30 @@ class QrViewOverlayShape extends OverlayShape {
         ),
         backgroundPaint,
       );
+    }
+
+    if (borderEnabled) {
+      double borderLength = this.borderLength;
+      final maxBorderLength = min(roiRect.width / 2.0, roiRect.height / 2.0);
+      borderLength = (borderLength < maxBorderLength) ? borderLength : maxBorderLength;
+
+      // limit border radius
+      double borderRadius = this.borderRadius;
+      borderRadius = (borderRadius < borderLength) ? borderRadius : borderLength;
+
+      // calculate border properties with alignment
+      double borderOffset = 0.0;
+      if (border.strokeAlign == StrokeAlign.outside) {
+        borderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
+      } else if (border.strokeAlign == StrokeAlign.center) {
+        borderOffset = borderRadius + _borderOffset;
+      } else if (border.strokeAlign == StrokeAlign.inside) {
+        borderOffset = borderRadius + _borderOffset - (border.width / 2.0);
+      }
 
       final borderPaint = Paint()
         ..style = PaintingStyle.stroke
+        ..strokeJoin = (borderRadius > 0.0 && borderRadius >= _borderOffset) ? StrokeJoin.round : StrokeJoin.miter
         ..strokeCap = StrokeCap.values[borderCap.index]
         ..strokeWidth = border.width
         ..color = border.color;
@@ -244,32 +242,40 @@ class QrViewOverlayShape extends OverlayShape {
       final topLeftBorderPath = _buildTopLeftBorderPath(
         roiRect,
         borderLength,
-        responsiveBorderRadius,
-        responsiveBorderOffset,
+        borderRadius,
+        borderOffset,
       );
 
       final topRightBorderPath = _buildTopRightBorderPath(
         roiRect,
         borderLength,
-        responsiveBorderRadius,
-        responsiveBorderOffset,
+        borderRadius,
+        borderOffset,
       );
 
       final bottomRightBorderPath = _buildBottomRightBorderPath(
         roiRect,
         borderLength,
-        responsiveBorderRadius,
-        responsiveBorderOffset,
+        borderRadius,
+        borderOffset,
       );
 
       final bottomLeftBorderPath = _buildBottomLeftBorderPath(
         roiRect,
         borderLength,
-        responsiveBorderRadius,
-        responsiveBorderOffset,
+        borderRadius,
+        borderOffset,
       );
 
       canvas
+        ..drawPath(
+          Path.combine(
+            PathOperation.difference,
+            Path()..addRect(rect),
+            Path()..addRRect(RRect.fromRectAndRadius(roiRect, Radius.circular(borderRadius))),
+          ),
+          backgroundPaint,
+        )
         ..drawPath(topLeftBorderPath, borderPaint)
         ..drawPath(topRightBorderPath, borderPaint)
         ..drawPath(bottomRightBorderPath, borderPaint)
@@ -319,8 +325,8 @@ class QrViewOverlayShape extends OverlayShape {
   Path _buildTopLeftBorderPath(
     Rect roiRect,
     double borderLength,
-    double responsiveBorderRadius,
-    double responsiveBorderOffset,
+    double borderRadius,
+    double borderOffset,
   ) {
     return Path()
       ..moveTo(
@@ -329,14 +335,14 @@ class QrViewOverlayShape extends OverlayShape {
       )
       ..lineTo(
         roiRect.left + _borderOffset,
-        roiRect.top + responsiveBorderOffset,
+        roiRect.top + borderOffset,
       )
       ..arcToPoint(
         Offset(
-          roiRect.left + responsiveBorderOffset,
+          roiRect.left + borderOffset,
           roiRect.top + _borderOffset,
         ),
-        radius: Radius.circular(responsiveBorderRadius),
+        radius: Radius.circular(borderRadius - _borderOffset),
       )
       ..lineTo(
         roiRect.left + borderLength,
@@ -347,8 +353,8 @@ class QrViewOverlayShape extends OverlayShape {
   Path _buildTopRightBorderPath(
     Rect roiRect,
     double borderLength,
-    double responsiveBorderRadius,
-    double responsiveBorderOffset,
+    double borderRadius,
+    double borderOffset,
   ) {
     return Path()
       ..moveTo(
@@ -356,15 +362,15 @@ class QrViewOverlayShape extends OverlayShape {
         roiRect.top + _borderOffset,
       )
       ..lineTo(
-        roiRect.left + roiRect.width - responsiveBorderOffset,
+        roiRect.left + roiRect.width - borderOffset,
         roiRect.top + _borderOffset,
       )
       ..arcToPoint(
         Offset(
           roiRect.left + roiRect.width - _borderOffset,
-          roiRect.top + responsiveBorderOffset,
+          roiRect.top + borderOffset,
         ),
-        radius: Radius.circular(responsiveBorderRadius),
+        radius: Radius.circular(borderRadius - _borderOffset),
       )
       ..lineTo(
         roiRect.left + roiRect.width - _borderOffset,
@@ -375,8 +381,8 @@ class QrViewOverlayShape extends OverlayShape {
   Path _buildBottomRightBorderPath(
     Rect roiRect,
     double borderLength,
-    double responsiveBorderRadius,
-    double responsiveBorderOffset,
+    double borderRadius,
+    double borderOffset,
   ) {
     return Path()
       ..moveTo(
@@ -385,14 +391,14 @@ class QrViewOverlayShape extends OverlayShape {
       )
       ..lineTo(
         roiRect.left + roiRect.width - _borderOffset,
-        roiRect.top + roiRect.height - responsiveBorderOffset,
+        roiRect.top + roiRect.height - borderOffset,
       )
       ..arcToPoint(
         Offset(
-          roiRect.left + roiRect.width - responsiveBorderOffset,
+          roiRect.left + roiRect.width - borderOffset,
           roiRect.top + roiRect.height - _borderOffset,
         ),
-        radius: Radius.circular(responsiveBorderRadius),
+        radius: Radius.circular(borderRadius - _borderOffset),
       )
       ..lineTo(
         roiRect.left + roiRect.width - borderLength,
@@ -403,8 +409,8 @@ class QrViewOverlayShape extends OverlayShape {
   Path _buildBottomLeftBorderPath(
     Rect roiRect,
     double borderLength,
-    double responsiveBorderRadius,
-    double responsiveBorderOffset,
+    double borderRadius,
+    double borderOffset,
   ) {
     return Path()
       ..moveTo(
@@ -412,15 +418,15 @@ class QrViewOverlayShape extends OverlayShape {
         roiRect.top + roiRect.height - _borderOffset,
       )
       ..lineTo(
-        roiRect.left + responsiveBorderOffset,
+        roiRect.left + borderOffset,
         roiRect.top + roiRect.height - _borderOffset,
       )
       ..arcToPoint(
         Offset(
           roiRect.left + _borderOffset,
-          roiRect.top + roiRect.height - responsiveBorderOffset,
+          roiRect.top + roiRect.height - borderOffset,
         ),
-        radius: Radius.circular(responsiveBorderRadius),
+        radius: Radius.circular(borderRadius - _borderOffset),
       )
       ..lineTo(
         roiRect.left + _borderOffset,
@@ -462,12 +468,7 @@ class QrViewOverlayShape extends OverlayShape {
 
     return Offset(
       centerX,
-      centerY +
-          ((roiRect.height -
-                  (roiRect.height / 2.0) -
-                  (maxScanLineWidth / 2.0) +
-                  _scanLineOffset) *
-              (scanLinePosition?.dy ?? 0.0)),
+      centerY + ((roiRect.height - (roiRect.height / 2.0) - (maxScanLineWidth / 2.0) + _scanLineOffset) * (scanLinePosition?.dy ?? 0.0)),
     );
   }
 }
