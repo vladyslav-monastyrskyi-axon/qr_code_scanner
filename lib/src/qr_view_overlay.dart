@@ -202,76 +202,79 @@ class QrViewOverlayShape extends OverlayShape {
       scanAreaHeight - _borderOffset,
     );
 
-    double borderLength = this.borderLength;
-    final maxBorderLength = min(roiRect.width / 2.0, roiRect.height / 2.0);
-    borderLength = (borderLength > maxBorderLength) ? maxBorderLength : borderLength;
-    borderLength -= borderCap == BorderCap.round ? (border.width / 2.0) : 0.0;
+    if (borderEnabled) {
+      double borderLength = this.borderLength;
+      final maxBorderLength = min(roiRect.width / 2.0, roiRect.height / 2.0);
+      borderLength = (borderLength < maxBorderLength) ? borderLength : maxBorderLength;
+      borderLength -= borderCap == BorderCap.round ? (border.width / 2.0) : 0.0;
 
-    // limit border radius
-    double borderRadius = this.borderRadius;
-    borderRadius = (borderRadius > borderLength) ? borderLength : borderRadius;
+      // limit border radius
+      double borderRadius = this.borderRadius;
+      borderRadius = (borderRadius < borderLength) ? borderRadius : borderLength;
 
-    // calculate border properties with alignment
-    double responsiveBorderRadius = 0.0;
-    double responsiveBorderOffset = 0.0;
-    if (border.strokeAlign == StrokeAlign.outside) {
-      responsiveBorderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
-      responsiveBorderRadius = borderRadius - _borderOffset;
-    } else if (border.strokeAlign == StrokeAlign.center) {
-      responsiveBorderOffset = borderRadius + _borderOffset;
-      responsiveBorderRadius = borderRadius;
-    } else if (border.strokeAlign == StrokeAlign.inside) {
-      responsiveBorderOffset = borderRadius + _borderOffset - (border.width / 2.0);
-      responsiveBorderRadius = borderRadius - _borderOffset;
-    }
+      // calculate border properties with alignment
+      double responsiveBorderRadius = 0.0;
+      double responsiveBorderOffset = 0.0;
+      if (border.strokeAlign == StrokeAlign.outside) {
+        responsiveBorderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
+        responsiveBorderRadius = borderRadius - _borderOffset;
+      } else if (border.strokeAlign == StrokeAlign.center) {
+        responsiveBorderOffset = borderRadius + _borderOffset;
+        responsiveBorderRadius = borderRadius;
+      } else if (border.strokeAlign == StrokeAlign.inside) {
+        responsiveBorderOffset = borderRadius + _borderOffset - (border.width / 2.0);
+        responsiveBorderRadius = borderRadius - _borderOffset;
+      }
 
-    canvas.drawPath(
-      Path.combine(
+      canvas.drawPath(
+        Path.combine(
           PathOperation.difference,
           Path()..addRect(rect),
-          Path()..addRRect(RRect.fromRectAndRadius(roiRect, Radius.circular(borderRadius)))),
-      backgroundPaint,
-    );
+          Path()..addRRect(RRect.fromRectAndRadius(roiRect, Radius.circular(borderRadius))),
+        ),
+        backgroundPaint,
+      );
 
-    final borderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.values[borderCap.index]
-      ..strokeWidth = border.width
-      ..color = border.color;
+      final borderPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.values[borderCap.index]
+        ..strokeWidth = border.width
+        ..color = border.color;
 
-    final topLeftBorderPath = _buildTopLeftBorderPath(
-      roiRect,
-      borderLength,
-      responsiveBorderRadius,
-      responsiveBorderOffset,
-    );
+      final topLeftBorderPath = _buildTopLeftBorderPath(
+        roiRect,
+        borderLength,
+        responsiveBorderRadius,
+        responsiveBorderOffset,
+      );
 
-    final topRightBorderPath = _buildTopRightBorderPath(
-      roiRect,
-      borderLength,
-      responsiveBorderRadius,
-      responsiveBorderOffset,
-    );
+      final topRightBorderPath = _buildTopRightBorderPath(
+        roiRect,
+        borderLength,
+        responsiveBorderRadius,
+        responsiveBorderOffset,
+      );
 
-    final bottomRightBorderPath = _buildBottomRightBorderPath(
-      roiRect,
-      borderLength,
-      responsiveBorderRadius,
-      responsiveBorderOffset,
-    );
+      final bottomRightBorderPath = _buildBottomRightBorderPath(
+        roiRect,
+        borderLength,
+        responsiveBorderRadius,
+        responsiveBorderOffset,
+      );
 
-    final bottomLeftBorderPath = _buildBottomLeftBorderPath(
-      roiRect,
-      borderLength,
-      responsiveBorderRadius,
-      responsiveBorderOffset,
-    );
+      final bottomLeftBorderPath = _buildBottomLeftBorderPath(
+        roiRect,
+        borderLength,
+        responsiveBorderRadius,
+        responsiveBorderOffset,
+      );
 
-    canvas
-      ..drawPath(topLeftBorderPath, borderPaint)
-      ..drawPath(topRightBorderPath, borderPaint)
-      ..drawPath(bottomRightBorderPath, borderPaint)
-      ..drawPath(bottomLeftBorderPath, borderPaint);
+      canvas
+        ..drawPath(topLeftBorderPath, borderPaint)
+        ..drawPath(topRightBorderPath, borderPaint)
+        ..drawPath(bottomRightBorderPath, borderPaint)
+        ..drawPath(bottomLeftBorderPath, borderPaint);
+    }
 
     if (scanLineEnabled) {
       final scanLineEndWidth = this.scanLineEndWidth ?? scanLineWidth;
