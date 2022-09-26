@@ -10,48 +10,6 @@ Since the underlying frameworks of this package, [zxing for android](https://git
 
 A QR code scanner that works on both iOS and Android by natively embedding the platform view within Flutter. The integration with Flutter is seamless, much better than jumping into a native Activity or a ViewController to perform the scan.
 
-## Screenshots
-<table>
-<tr>
-<th colspan="2">
-Android
-</th>
-</tr>
-
-<tr>
-<td>
-<p align="center">
-<img src="https://raw.githubusercontent.com/juliuscanute/qr_code_scanner/master/.resources/android-app-screen-one.jpg" width="30%" height="30%">
-</p>
-</td>
-<td>
-<p align="center">
-<img src="https://raw.githubusercontent.com/juliuscanute/qr_code_scanner/master/.resources/android-app-screen-two.jpg" width="30%" height="30%">
-</p>
-</td>
-</tr>
-
-<tr>
-<th colspan="2">
-iOS
-</th>
-</tr>
-
-<tr>
-<td>
-<p align="center">
-<img src="https://raw.githubusercontent.com/juliuscanute/qr_code_scanner/master/.resources/ios-app-screen-one.png" width="30%" height="30%">
-</p>
-</td>
-<td>
-<p align="center">
-<img src="https://raw.githubusercontent.com/juliuscanute/qr_code_scanner/master/.resources/ios-app-screen-two.png" width="30%" height="30%">
-</p>
-</td>
-</tr>
-
-</table>
-
 ## Android Integration
 In order to use this plugin, please update the Gradle, Kotlin and Kotlin Gradle Plugin:
 
