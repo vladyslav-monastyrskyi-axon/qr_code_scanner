@@ -34,7 +34,6 @@ android {
 
     defaultConfig {
         applicationId "net.touchcapture.qr.flutterqrexample"
-        // minSdkVersion is determined by Native View.
         minSdkVersion 21
         targetSdkVersion 32
         versionCode flutterVersionCode.toInteger()
@@ -44,7 +43,6 @@ android {
 
     buildTypes {
         release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
     }
