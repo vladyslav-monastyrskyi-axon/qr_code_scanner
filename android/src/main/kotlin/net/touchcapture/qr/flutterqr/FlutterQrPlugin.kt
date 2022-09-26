@@ -1,0 +1,42 @@
+package net.touchcapture.qr.flutterqr
+
+import androidx.annotation.NonNull
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
+class FlutterQrPlugin : FlutterPlugin, ActivityAware {
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        flutterPluginBinding.platformViewRegistry
+                .registerViewFactory(
+                        VIEW_TYPE_ID,
+                        QRViewFactory(flutterPluginBinding.binaryMessenger)
+                )
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {}
+
+    override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
+        QrShared.activity = activityPluginBinding.activity
+        QrShared.binding = activityPluginBinding
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        QrShared.activity = null
+        QrShared.binding = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {
+        QrShared.activity = activityPluginBinding.activity
+        QrShared.binding = activityPluginBinding
+    }
+
+    override fun onDetachedFromActivity() {
+        QrShared.activity = null
+        QrShared.binding = null
+    }
+
+    companion object {
+        private const val VIEW_TYPE_ID = "net.touchcapture.qr.flutterqr/qrview"
+    }
+}
