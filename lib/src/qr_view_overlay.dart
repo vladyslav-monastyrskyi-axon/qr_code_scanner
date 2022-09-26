@@ -12,22 +12,22 @@ enum ScanLineCap { square, round }
 class OverlayOptions {
   OverlayOptions({
     this.border = const BorderSide(
-      width: 6.0,
+      width: 8.0,
       strokeAlign: StrokeAlign.center,
-      color: Color(0xAF000000),
+      color: Color(0xFFFFFFFF),
     ),
     this.borderCap = BorderCap.round,
-    this.borderRadius = 12.0,
+    this.borderRadius = 16.0,
     this.borderLength = 64.0,
     this.borderEnabled = true,
-    this.scanLineWidth = 6.0,
+    this.scanLineWidth = 2.0,
     this.scanLineEndWidth,
     this.scanLineCap = ScanLineCap.round,
     this.scanLineAlignment = ScanLineAlignment.inside,
     this.scanLineColors = const [Colors.white],
     this.scanLineColorStops,
     this.scanLinePosition,
-    this.scanLineEnabled = true,
+    this.scanLineEnabled = false,
     this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.75),
     this.scanAreaSize,
     this.scanAreaHeight,
@@ -75,8 +75,8 @@ abstract class OverlayShape extends ShapeBorder {
   final double scanAreaOffset;
 }
 
-class QrScannerOverlayShape extends OverlayShape {
-  QrScannerOverlayShape({
+class QrViewOverlayShape extends OverlayShape {
+  QrViewOverlayShape({
     required this.border,
     required this.borderCap,
     required this.borderRadius,
@@ -150,8 +150,8 @@ class QrScannerOverlayShape extends OverlayShape {
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
 
   @override
-  QrScannerOverlayShape scale(double t) {
-    return QrScannerOverlayShape(
+  QrViewOverlayShape scale(double t) {
+    return QrViewOverlayShape(
       border: border,
       borderCap: borderCap,
       borderRadius: borderRadius * t,

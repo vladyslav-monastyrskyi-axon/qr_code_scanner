@@ -1,5 +1,5 @@
 export 'src/qr_view.dart';
-export 'src/qr_scanner_overlay_shape.dart';
+export 'src/qr_view_overlay.dart';
 export 'src/types/barcode.dart';
 export 'src/types/barcode_format.dart';
 export 'src/types/camera.dart';

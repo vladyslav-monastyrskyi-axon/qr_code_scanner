@@ -6,7 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 import 'lifecycle_event_handler.dart';
-import 'qr_scanner_overlay_shape.dart';
+import 'qr_view_overlay.dart';
 import 'types/barcode.dart';
 import 'types/barcode_format.dart';
 import 'types/camera.dart';
@@ -71,7 +71,7 @@ class _QrViewState extends State<QrView> with SingleTickerProviderStateMixin {
       ),
     );
 
-    _overlay = QrScannerOverlayShape(
+    _overlay = QrViewOverlayShape(
       border: widget.overlayOptions.border,
       borderCap: widget.overlayOptions.borderCap,
       borderRadius: widget.overlayOptions.borderRadius,
@@ -112,7 +112,7 @@ class _QrViewState extends State<QrView> with SingleTickerProviderStateMixin {
               builder: (_, scanLinePosition, __) {
                 return Container(
                   decoration: ShapeDecoration(
-                    shape: QrScannerOverlayShape(
+                    shape: QrViewOverlayShape(
                       border: widget.overlayOptions.border,
                       borderCap: widget.overlayOptions.borderCap,
                       borderRadius: widget.overlayOptions.borderRadius,
