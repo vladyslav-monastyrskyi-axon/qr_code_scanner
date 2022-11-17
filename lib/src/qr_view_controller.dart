@@ -147,7 +147,7 @@ class QRViewController {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       if (key.currentContext == null) return false;
 
-      SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await Future.microtask(() async {
         final renderBox = key.currentContext?.findRenderObject() as RenderBox;
 
         try {
