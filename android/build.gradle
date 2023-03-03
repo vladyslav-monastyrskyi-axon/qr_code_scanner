@@ -2,14 +2,14 @@ group 'net.touchcapture.qr.flutterqr'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.7.21'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -53,6 +53,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation ('com.journeyapps:zxing-android-embedded:4.3.0') { transitive = false }
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.zxing:core:3.5.0'
+    implementation 'com.google.zxing:core:3.5.1'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.0'
 }
