@@ -12,9 +12,9 @@ enum ScanLineCap { square, round }
 class OverlayOptions {
   OverlayOptions({
     this.border = const BorderSide(
-      width: 8.0,
-      strokeAlign: StrokeAlign.center,
+      strokeAlign: BorderSide.strokeAlignCenter,
       color: Colors.white,
+      width: 8.0,
     ),
     this.borderCap = BorderCap.round,
     this.borderRadius = 16.0,
@@ -118,23 +118,24 @@ class QrViewOverlayShape extends OverlayShape {
   final Color overlayColor;
 
   double get _borderOffset {
-    final borderOffset = <StrokeAlign, double>{
-      StrokeAlign.outside: -border.width / 2.0,
-      StrokeAlign.center: 0.0,
-      StrokeAlign.inside: border.width / 2.0,
-    };
-
-    return borderOffset[border.strokeAlign] ?? 0.0;
+    if (border.strokeAlign == BorderSide.strokeAlignInside) {
+      return border.width / 2.0;
+    } else if (border.strokeAlign == BorderSide.strokeAlignCenter) {
+      return 0.0;
+    } else {
+      return -border.width / 2.0;
+    }
   }
 
   double get _scanLineOffset {
-    final scanLineOffset = <ScanLineAlignment, double>{
-      ScanLineAlignment.outside: borderEnabled && border.width > 0.0 ? -_borderOffset + (border.width / 2.0) : 0.0,
-      ScanLineAlignment.center: borderEnabled && border.width > 0.0 ? -_borderOffset : 0.0,
-      ScanLineAlignment.inside: borderEnabled && border.width > 0.0 ? -_borderOffset - (border.width / 2.0) : 0.0,
-    };
-
-    return scanLineOffset[scanLineAlignment] ?? 0.0;
+    switch (scanLineAlignment) {
+      case ScanLineAlignment.inside:
+        return borderEnabled && border.width > 0.0 ? -_borderOffset - (border.width / 2.0) : 0.0;
+      case ScanLineAlignment.center:
+        return borderEnabled && border.width > 0.0 ? -_borderOffset : 0.0;
+      case ScanLineAlignment.outside:
+        return borderEnabled && border.width > 0.0 ? -_borderOffset + (border.width / 2.0) : 0.0;
+    }
   }
 
   double get _scanLineRadius {
@@ -224,12 +225,12 @@ class QrViewOverlayShape extends OverlayShape {
 
       // calculate border properties with alignment
       double borderOffset = 0.0;
-      if (border.strokeAlign == StrokeAlign.outside) {
-        borderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
-      } else if (border.strokeAlign == StrokeAlign.center) {
-        borderOffset = borderRadius + _borderOffset;
-      } else if (border.strokeAlign == StrokeAlign.inside) {
+      if (border.strokeAlign == BorderSide.strokeAlignInside) {
         borderOffset = borderRadius + _borderOffset - (border.width / 2.0);
+      } else if (border.strokeAlign == BorderSide.strokeAlignCenter) {
+        borderOffset = borderRadius + _borderOffset;
+      } else {
+        borderOffset = borderRadius + _borderOffset + (borderRadius > 0.0 ? (border.width / 2.0) : 0.0);
       }
 
       final borderPaint = Paint()
