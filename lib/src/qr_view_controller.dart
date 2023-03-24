@@ -145,26 +145,26 @@ class QRViewController {
     required OverlayShape overlay,
   }) async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await Future.delayed(const Duration(milliseconds: 500));
+
       if (key.currentContext == null) return false;
 
-      await Future.microtask(() async {
-        final renderBox = key.currentContext?.findRenderObject() as RenderBox;
+      final renderBox = key.currentContext?.findRenderObject() as RenderBox;
 
-        try {
-          await channel.invokeMethod(
-            'setDimensions',
-            {
-              'width': renderBox.size.width,
-              'height': renderBox.size.height,
-              'scanAreaWidth': overlay.scanAreaWidth,
-              'scanAreaHeight': overlay.scanAreaHeight,
-              'scanAreaOffset': overlay.scanAreaOffset,
-            },
-          );
-        } on PlatformException catch (e) {
-          throw CameraException(e.code, e.message);
-        }
-      });
+      try {
+        await channel.invokeMethod(
+          'setDimensions',
+          {
+            'width': renderBox.size.width,
+            'height': renderBox.size.height,
+            'scanAreaWidth': overlay.scanAreaWidth,
+            'scanAreaHeight': overlay.scanAreaHeight,
+            'scanAreaOffset': overlay.scanAreaOffset,
+          },
+        );
+      } on PlatformException catch (e) {
+        throw CameraException(e.code, e.message);
+      }
 
       return true;
     } else if (defaultTargetPlatform == TargetPlatform.android) {
