@@ -39,7 +39,8 @@ class QRViewController {
 
   final MethodChannel _channel;
   final CameraFacing _cameraFacing;
-  final StreamController<Barcode?> _scanUpdateController = StreamController<Barcode>();
+  final StreamController<Barcode?> _scanUpdateController =
+      StreamController<Barcode>();
 
   bool _hasPermissions = false;
 
@@ -54,7 +55,10 @@ class QRViewController {
   ) async {
     try {
       await QRViewController.updateDimensions(key, _channel, overlay: overlay);
-      return await _channel.invokeMethod('startScan', barcodeFormats?.map((format) => format.index).toList() ?? []);
+      return await _channel.invokeMethod(
+        'startScan',
+        barcodeFormats?.map((format) => format.index).toList() ?? [],
+      );
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -66,7 +70,8 @@ class QRViewController {
 
       if (cameraFacing == -1) return _cameraFacing;
 
-      return CameraFacing.values[await _channel.invokeMethod('getCameraInfo') as int];
+      return CameraFacing
+          .values[await _channel.invokeMethod('getCameraInfo') as int];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -74,7 +79,8 @@ class QRViewController {
 
   Future<CameraFacing> flipCamera() async {
     try {
-      return CameraFacing.values[await _channel.invokeMethod('flipCamera') as int];
+      return CameraFacing
+          .values[await _channel.invokeMethod('flipCamera') as int];
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -122,7 +128,9 @@ class QRViewController {
 
   Future<SystemFeatures> getSystemFeatures() async {
     try {
-      final features = await _channel.invokeMapMethod<String, dynamic>('getSystemFeatures');
+      final features = await _channel.invokeMapMethod<String, dynamic>(
+        'getSystemFeatures',
+      );
 
       if (features != null) {
         return SystemFeatures.fromJson(features);
@@ -186,7 +194,12 @@ class QRViewController {
   Future<void> scanInvert(bool isScanInvert) async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       try {
-        await _channel.invokeMethod('invertScan', {'isInvertScan': isScanInvert});
+        await _channel.invokeMethod(
+          'invertScan',
+          {
+            'isInvertScan': isScanInvert,
+          },
+        );
       } on PlatformException catch (e) {
         throw CameraException(e.code, e.message);
       }
